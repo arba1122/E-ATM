@@ -1,0 +1,62 @@
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# VS Code
+.vscode/
+
+# .NET Core
+/bin/
+/obj/
+
+# ASP.NET
+/wwwroot/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer log files
+*.cab
+*.log
+
+# Build Results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]istro/
+[Dd]eploy/
+[Dd]ebug/
+[Dd]ebug-x64/
+[Dd]ebug-x86/
+[Dd]eploy/
+[Dd]ist/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+
+# JetBrains Rider
+.idea/
+
+# OS generated files
+.DS_Store*
