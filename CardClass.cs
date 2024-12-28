@@ -11,6 +11,7 @@ public class Card
     public int CardNumber { get; } // Kortnummer
     private int Pin { get; } // Lagrad PIN-kod
     private int PinAttempts; // Antal felaktiga försök
+    public BankAccount Account { get; set; } // egenskap för att länka till bankkonto
     private const int MaxAttempts = 3; // Max antal försök innan kortet låses. Const För värden som aldrig ändras och är kända vid kompilering.
     public bool IsLocked { get; private set; } // Om kortet är låst
 
