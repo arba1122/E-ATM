@@ -2,13 +2,14 @@ using System;
 
 // bankkort hanterar PIN-verifiering och låsning
 public class Card
-{
+{   //egenskaper
     public int CardNumber { get; private set; } // Kortets nummer
+    public bool IsLocked { get; private set; } // Om kortet är låst
+    public BankAccount Account { get; private set; } // Kontot kopplat till kortet
+    //fält
     private int pin; // Kortets PIN-kod
     private int failedAttempts; // Antal misslyckade PIN-försök
     private const int maxFailedAttempts = 3; // Max antal tillåtna misslyckade försök
-    public bool IsLocked { get; private set; } // Om kortet är låst
-    public BankAccount Account { get; private set; } // Kontot kopplat till kortet
 
     // Konstruktor över kortets egenskaper
     public Card(int cardNumber, int pin, BankAccount account)
@@ -36,7 +37,7 @@ public class Card
         }
         else
         {
-            failedAttempts++; // Öka räknaren
+            failedAttempts++; // Öka räknaren med 1 för att hålla koll på försök
             if (failedAttempts >= maxFailedAttempts)
             {
                 IsLocked = true; // Lås kortet vid max försök
@@ -44,7 +45,7 @@ public class Card
             }
             else
             {
-                Console.WriteLine($"Fel PIN. Försök kvar: {maxFailedAttempts - failedAttempts}"); // Meddela kvarvarande försök
+                Console.WriteLine($"Fel PIN. Försök kvar: {maxFailedAttempts - failedAttempts}"); // Meddela försök
             }
             return false;
         }
