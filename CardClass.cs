@@ -1,86 +1,52 @@
+using System;
 
-
-//funderingar till krister att pin attempt maxattempt sk avara i card eller account
-
-using System.ComponentModel.Design;
-
+// bankkort hanterar PIN-verifiering och låsning
 public class Card
-
 {
-
-    public int CardNumber { get; } // Kortnummer
-    private int Pin { get; } // Lagrad PIN-kod
-    private int PinAttempts; // Antal felaktiga försök
-    public BankAccount Account { get; set; } // egenskap för att länka till bankkonto
-    private const int MaxAttempts = 3; // Max antal försök innan kortet låses. Const För värden som aldrig ändras och är kända vid kompilering.
+    public int CardNumber { get; private set; } // Kortets nummer
+    private int pin; // Kortets PIN-kod
+    private int failedAttempts; // Antal misslyckade PIN-försök
+    private const int maxFailedAttempts = 3; // Max antal tillåtna misslyckade försök
     public bool IsLocked { get; private set; } // Om kortet är låst
+    public BankAccount Account { get; private set; } // Kontot kopplat till kortet
 
-    public Card(int cardNumber, int pin)
+    // Konstruktor över kortets egenskaper
+    public Card(int cardNumber, int pin, BankAccount account)
     {
         CardNumber = cardNumber;
-        Pin = pin;
-        PinAttempts = 0; // Sätt initialt antal försök till 0
-        IsLocked = false; //false kortet är inte låst från början
-
-
+        this.pin = pin;
+        Account = account;
+        failedAttempts = 0;
+        IsLocked = false;
     }
 
-    
-
-    public bool CheckPin(int inputPin)
+    // Verifierar att den inslagna PIN-koden är korrekt
+    public bool VerifyPin(int inputPin)
     {
-        if (IsLocked)
+        if (IsLocked) // Kontrollera om kortet redan är låst
         {
             Console.WriteLine("Kortet är låst.");
             return false;
         }
 
-        if (inputPin == Pin)
+        if (inputPin == pin) // Kontrollera om PIN är korrekt
         {
-            PinAttempts = 0; // Återställ antalet försök vid korrekt PIN
+            failedAttempts = 0; // Återställer räknaren
             return true;
         }
         else
         {
-            PinAttempts++;
-
-            if (PinAttempts >= MaxAttempts)
+            failedAttempts++; // Öka räknaren
+            if (failedAttempts >= maxFailedAttempts)
             {
-                IsLocked = true;
-                Console.WriteLine("Kortet har låsts efter tre felaktiga försök.");
+                IsLocked = true; // Lås kortet vid max försök
+                Console.WriteLine("Kortet har låsts efter för många felaktiga försök.");
             }
             else
             {
-                Console.WriteLine($"Felaktig PIN. Försök kvar: {MaxAttempts - PinAttempts}");
+                Console.WriteLine($"Fel PIN. Försök kvar: {maxFailedAttempts - failedAttempts}"); // Meddela kvarvarande försök
             }
             return false;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
-
-
-
-
-

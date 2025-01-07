@@ -1,20 +1,13 @@
-
-
-
-
-
-
 using System;
-using System.Collections.Generic;
 
+// Klassen transaktion med typ, datum och belopp
 public class Transaction
 {
-    // Egenskaper för att beskriva en transaktion
-    public string Type { get; set; } // Typ av transaktion (t.ex. "Insättning" eller "Uttag")
-    public DateTime DateTime { get; set; } // Datum och tid för transaktionen
-    public decimal Amount { get; set; } // Belopp för transaktionen
+    public string Type { get; } // Typ av transaktion (t.ex. "Uttag" eller "Insättning")
+    public DateTime DateTime { get; } // Datum och tid för transaktionen
+    public decimal Amount { get; } // Beloppet för transaktionen
 
-    // Konstruktor för att skapa en ny transaktion
+    // Konstruktor som initierar transaktionens egenskaper
     public Transaction(string type, DateTime dateTime, decimal amount)
     {
         Type = type;
@@ -22,9 +15,9 @@ public class Transaction
         Amount = amount;
     }
 
-    // Metod för att visa information om transaktionen
+    // Metod som visar detaljer om transaktionen
     public void ShowTransactionDetails()
     {
-        Console.WriteLine($"{DateTime}: {Type} - {Amount} kr");
+        Console.WriteLine($"{DateTime}: {Type} - {Amount:C}"); // Skriv ut detaljer i formatet "Datum: Typ - Belopp"
     }
 }

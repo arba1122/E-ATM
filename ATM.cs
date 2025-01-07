@@ -1,109 +1,134 @@
+using System;
+using System.Collections.Generic;
+
+// Klassen representerar en bankomat
 public class ATM
 {
-    public List<Card> Cards;
-    private const int MaxWithdrawals = 3;
-    private const int MaxAmountPerWithdrawal = 5000;
+    public List<Card> Cards; // Lista med kort som är tillgängliga för bankomaten
 
+    // Konstruktor som initierar listan med kort
     public ATM(List<Card> cards)
     {
         Cards = cards;
     }
 
+    // Huvudmetod som kör bankomatens funktioner
     public void Run()
     {
-        Console.Write("Ange kortnummer: ");
-        if (!int.TryParse(Console.ReadLine(), out int cardNumber))
-        {
-            Console.WriteLine("Ogiltigt kortnummer.");
-            return;
-        }
-
-        Card userCard = Cards.Find(card => card.CardNumber == cardNumber);
-
-        if (userCard == null)
-        {
-            Console.WriteLine("Kortnummer hittades inte.");
-            return;
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            Console.Write("Ange PIN: ");
-            if (!int.TryParse(Console.ReadLine(), out int pin))
-            {
-                Console.WriteLine("Ogiltig PIN.");
-                continue;
-            }
-
-            if (userCard.CheckPin(pin))
-            {
-                ShowMenu(userCard);
-                return;
-            }
-        }
-
-        Console.WriteLine("Max antal försök uppnått. Kortet är nu låst.");
-    }
-
-    private void ShowMenu(Card card)
-    {
-        int withdrawalCount = 0;
+        Console.WriteLine("--- Välkommen till E-ATM ---");
 
         while (true)
         {
-            Console.WriteLine("\n1. Visa saldo");
+            Console.Write("Ange kortnummer (eller 'exit' för att avsluta): ");
+            string input = Console.ReadLine();
+
+            if (input?.ToLower() == "exit") // Avsluta programmet om användaren skriver "exit"
+            {
+                Console.WriteLine("Tack för att du använde E-ATM!");
+                break;
+            }
+
+            if (int.TryParse(input, out int cardNumber)) // Kontrollera att kortnumret är giltigt
+            {
+                Card userCard = FindCard(cardNumber); // Sök efter kortet
+
+                if (userCard != null)
+                {
+                    if (!userCard.IsLocked) // Kontrollera att kortet inte är låst
+                    {
+                        if (VerifyPin(userCard)) // Verifiera PIN-koden
+                        {
+                            ShowMainMenu(userCard); // Visa huvudmenyn om verifieringen lyckas
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Det här kortet är låst. Kontakta banken.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Kortet hittades inte."); // Felmeddelande om kortet inte finns
+                }
+            }
+            else
+            {
+                Console.WriteLine("Ogiltigt kortnummer. Försök igen."); // Meddelande om kortnummer inte är giltigt
+            }
+        }
+    }
+
+    // Hitta kort i listan baserat på kortnummer
+    private Card FindCard(int cardNumber)
+    {
+        return Cards.Find(card => card.CardNumber == cardNumber);
+    }
+
+    // Verifiera PIN-koden för ett kort
+    private bool VerifyPin(Card card)
+    {
+        Console.WriteLine("--- Verifiering ---");
+        for (int i = 0; i < 3; i++) // Tillåt tre försök
+        {
+            Console.Write("Ange PIN: ");
+            if (int.TryParse(Console.ReadLine(), out int pin) && card.VerifyPin(pin))
+            {
+                Console.WriteLine("Verifiering lyckades!");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Visa huvudmenyn för kortet
+    private void ShowMainMenu(Card card)
+    {
+        while (true)
+        {
+            Console.WriteLine("\n--- Huvudmeny ---");
+            Console.WriteLine("1. Visa saldo");
             Console.WriteLine("2. Ta ut pengar");
             Console.WriteLine("3. Visa transaktionshistorik");
-            Console.WriteLine("4. Avsluta");
+            Console.WriteLine("4. Logga ut");
             Console.Write("Välj ett alternativ: ");
 
-            if (!int.TryParse(Console.ReadLine(), out int choice))
-            {
-                Console.WriteLine("Ogiltigt val.");
-                continue;
-            }
+            string choice = Console.ReadLine();
 
             switch (choice)
             {
-                case 1:
-                    card.Account.ShowBalance();
+                case "1":
+                    Console.WriteLine($"Ditt saldo är: {card.Account.GetBalance():C}"); // Visa saldo
                     break;
-                case 2:
-                    if (withdrawalCount >= MaxWithdrawals)
-                    {
-                        Console.WriteLine("Max antal uttag nått.");
-                        break;
-                    }
-
-                    Console.Write("Ange belopp att ta ut: ");
-                    if (!int.TryParse(Console.ReadLine(), out int amount) || amount <= 0)
-                    {
-                        Console.WriteLine("Ogiltigt belopp.");
-                        break;
-                    }
-
-                    if (amount > MaxAmountPerWithdrawal)
-                    {
-                        Console.WriteLine("Beloppet överstiger maxbeloppet per uttag.");
-                        break;
-                    }
-
-                    if (card.Account.Withdraw(amount))
-                    {
-                        withdrawalCount++;
-                        Console.WriteLine($"Du har tagit ut {amount} kr.");
-                    }
+                case "2":
+                    HandleWithdrawal(card); // Hantera uttag
                     break;
-                case 3:
-                    card.Account.ShowTransactionHistory();
+                case "3":
+                    card.Account.ShowTransactionHistory(); // Visa transaktionshistorik
                     break;
-                case 4:
-                    Console.WriteLine("Avslutar...");
-                    return;
+                case "4":
+                    Console.WriteLine("Du har loggats ut.");
+                    return; // Avsluta menyn
                 default:
-                    Console.WriteLine("Ogiltigt val.");
+                    Console.WriteLine("Ogiltigt val. Försök igen."); // Felmeddelande om valet inte är giltigt
                     break;
             }
+        }
+    }
+
+    // Hantera uttag av pengar
+    private void HandleWithdrawal(Card card)
+    {
+        Console.Write("Ange belopp att ta ut: ");
+        if (decimal.TryParse(Console.ReadLine(), out decimal amount) && amount > 0) // Kontrollera giltigt belopp
+        {
+            if (!card.Account.Withdraw(amount))
+            {
+                Console.WriteLine("Otillräckligt saldo eller maxgräns nådd."); // Felmeddelande vid problem
+            }
+        }
+        else
+        {
+            Console.WriteLine("Ogiltigt belopp."); // Meddelande vid felaktigt belopp
         }
     }
 }
