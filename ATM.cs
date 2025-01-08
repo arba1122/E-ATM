@@ -96,16 +96,16 @@ public class ATM
 
             switch (choice)
             {
-                case "1":
-                    Console.WriteLine($"Ditt saldo är: {card.Account.GetBalance():C}"); // Visa saldo
+                case "1": // Visa saldo
+                    Console.WriteLine($"Ditt saldo är: {card.Account.Balance:C}");
                     break;
-                case "2":
-                    HandleWithdrawal(card); // Hantera uttag
+                case "2": // Hantera uttag
+                    HandleWithdrawal(card);
                     break;
-                case "3":
-                    card.Account.ShowTransactionHistory(); // Visa transaktionshistorik
+                case "3": // Visa transaktionshistorik
+                    card.Account.ShowTransactionHistory();
                     break;
-                case "4":
+                case "4": // Logga ut
                     Console.WriteLine("Du har loggats ut.");
                     return; // Avsluta menyn
                 default:
